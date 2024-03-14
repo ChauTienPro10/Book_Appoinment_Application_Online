@@ -7,13 +7,16 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import lombok.Data;
+
+@Data
 @Entity
 @Table(name="user")
 public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY) 
 	@Column(name="userid")
-	private int userid;
+	private long userid;
 	@Column(name="username")
 	private String username;
 	@Column(name="password")
@@ -32,10 +35,10 @@ public class User {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public int getUserid() {
+	public long getUserid() {
 		return userid;
 	}
-	public void setUserid(int userid) {
+	public void setUserid(long userid) {
 		this.userid = userid;
 	}
 	public String getUsername() {

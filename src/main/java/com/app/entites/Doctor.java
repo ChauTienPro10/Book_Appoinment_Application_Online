@@ -13,23 +13,23 @@ public class Doctor {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="doctorid")
-	private int doctorid;
+	private long doctorid;
 	@Column(name="userid")
-	private int userid;
+	private long userid;
 	@Column(name="specialization")
 	private String specialization;
 	@Column(name="avatar")
 	private byte[] avatar;
-	public int getDoctorid() {
+	public long getDoctorid() {
 		return doctorid;
 	}
 	public void setDoctorid(int doctorid) {
 		this.doctorid = doctorid;
 	}
-	public int getUserid() {
+	public long getUserid() {
 		return userid;
 	}
-	public void setUserid(int userid) {
+	public void setUserid(long userid) {
 		this.userid = userid;
 	}
 	public String getSpecialization() {

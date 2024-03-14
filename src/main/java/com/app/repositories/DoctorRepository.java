@@ -4,6 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.app.entites.Doctor;
 
-public interface DoctorRepository extends JpaRepository<Doctor, Integer>{
-
+public interface DoctorRepository extends JpaRepository<Doctor, Long>{
+	Doctor findDoctorByUserid(long iduser);
 }
