@@ -24,7 +24,36 @@ public class Appointment {
 	private java.util.Date timeof;
 	@Column(name="meettime")
 	private String meettime;
+	private String namecustomer;
+	private String namedoctor;
+	private String email;
 	
+	
+	
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public String getNamecustomer() {
+		return namecustomer;
+	}
+	public void setNamecustomer(String namecustomer) {
+		this.namecustomer = namecustomer;
+	}
+	public String getNamedoctor() {
+		return namedoctor;
+	}
+	public void setNamedoctor(String namedoctor) {
+		this.namedoctor = namedoctor;
+	}
+	public void setUserid(long userid) {
+		this.userid = userid;
+	}
+	public void setDoctorid(long doctorid) {
+		this.doctorid = doctorid;
+	}
 	public String getMeettime() {
 		return meettime;
 	}
@@ -56,12 +85,17 @@ public class Appointment {
 		this.timeof = timeof;
 	}
 	
-	public Appointment(long userid, long doctorid, java.util.Date timeof, String meettime) {
+	
+	public Appointment(long userid, long doctorid, java.util.Date timeof, String meettime, String namecustomer,
+			String namedoctor,String email) {
 		super();
 		this.userid = userid;
 		this.doctorid = doctorid;
 		this.timeof = timeof;
 		this.meettime = meettime;
+		this.namecustomer = namecustomer;
+		this.namedoctor = namedoctor;
+		this.email=email;
 	}
 	public Appointment() {
 		super();

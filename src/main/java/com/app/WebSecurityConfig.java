@@ -65,14 +65,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		http.cors().configurationSource(request -> {
 			CorsConfiguration configuration = new CorsConfiguration().applyPermitDefaultValues();
-			configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+			configuration.setAllowedOrigins(Arrays.asList("*"));
 			return configuration;
 		}).and().csrf().disable()
 
 				.authorizeRequests()
 
-				.requestMatchers(CorsUtils::isPreFlightRequest).permitAll().antMatchers("/**").permitAll()
-
+				.requestMatchers(CorsUtils::isPreFlightRequest).permitAll().antMatchers("/api/**","/doctor/getDoctor","/api/signup").permitAll()
+				.antMatchers("/confirm/agree","/confirm/allConfirm").hasRole("DOCTOR")
 				.anyRequest().authenticated();
 		http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 	}

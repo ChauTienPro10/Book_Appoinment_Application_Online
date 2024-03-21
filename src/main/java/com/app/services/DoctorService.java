@@ -22,7 +22,13 @@ public class DoctorService {
 	}
 	
 	public Doctor AddNewDoctor(Doctor dr) {
-		return doctorRepository.save(dr);
+		try {
+			return doctorRepository.save(dr);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 	public boolean DelDoctor(Doctor dr) {

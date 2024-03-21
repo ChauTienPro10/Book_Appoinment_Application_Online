@@ -6,4 +6,5 @@ import com.app.entites.Doctor;
 
 public interface DoctorRepository extends JpaRepository<Doctor, Long>{
 	Doctor findDoctorByUserid(long iduser);
+	Doctor findDoctorByDoctorid(long doctorid);
 }

@@ -27,6 +27,25 @@ public class Confirm {
 	@Column(name="meettime")
 	private String meettime;
 	
+	private String nameother;
+	
+	private String mailcustomer;
+	
+	public String getMailcustomer() {
+		return mailcustomer;
+	}
+	public void setMailcustomer(String mailcustomer) {
+		this.mailcustomer = mailcustomer;
+	}
+	public String getNameother() {
+		return nameother;
+	}
+	public void setNameother(String nameother) {
+		this.nameother = nameother;
+	}
+	
+	
+	
 	public String getMeettime() {
 		return meettime;
 	}
@@ -58,12 +77,16 @@ public class Confirm {
 		this.timeof = timeof;
 	}
 	
-	public Confirm(long userid, long doctorid, Date timeof, String meettime) {
+	
+
+	public Confirm(long userid, long doctorid, Date timeof, String meettime, String nameother, String mailcustomer) {
 		super();
 		this.userid = userid;
 		this.doctorid = doctorid;
 		this.timeof = timeof;
 		this.meettime = meettime;
+		this.nameother = nameother;
+		this.mailcustomer = mailcustomer;
 	}
 	public Confirm() {
 		super();

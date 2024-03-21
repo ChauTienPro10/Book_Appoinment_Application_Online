@@ -9,6 +9,8 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,7 +33,7 @@ public class UserContrl {
 		super();
 		this.userService = userService;
 	}
-
+	@PreAuthorize("hasRole('ROLE_DOCTOR')")
 	@GetMapping("/test")
 	public String getTest() {
 		return "hello";
@@ -42,6 +44,7 @@ public class UserContrl {
     		@RequestBody Map<String, String> jsonData, HttpSession session
     ) throws NoSuchAlgorithmException {
 	 	String username = jsonData.get("username");
+	 	
 	    String password = jsonData.get("password");
 	    System.out.print(username);
 	    System.out.print(password);
@@ -72,27 +75,35 @@ public class UserContrl {
 
 	    return (String) session.getAttribute("username");
 	  }
-	@PostMapping("/add")
-	public boolean addnewuserContrl(@RequestBody Map<String, String> jsonData) {
-		String username = jsonData.get("username");
-		String password=jsonData.get("password");
-		String email=jsonData.get("email");
-		String role=jsonData.get("role");
-		String name=jsonData.get("name");
-		User newUs=new User(username,password,email,role,name);
-		if(newUs !=null) {
-			try {
-				userService.addNewUser(newUs);
-				return true;
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-				return false;
-			}
-			
-		}
-		return false;
-	}
+//	@SuppressWarnings("unused")
+//	@PostMapping("/add")
+//	public ResponseEntity<User> addnewuserContrl(@RequestBody Map<String, String> jsonData) {
+//		String username = jsonData.get("username");
+//		if(userService.loadUserByUsername(username)!=null) {
+//			return ResponseEntity.notFound().build();
+//	 	}
+//		String password=jsonData.get("password");
+//		if(password.length()>10 || password.length()<6) {
+//			return ResponseEntity.notFound().build();
+//		}
+//		String email=jsonData.get("email");
+//		if(userService.findUserByMail(email)!=null) {
+//			return ResponseEntity.notFound().build();
+//		}
+//		String role=jsonData.get("role");
+//		String name=jsonData.get("name");
+//		User newUs=new User(username,password,email,role,name);
+//		if(newUs !=null) {
+//			try {
+//				return ResponseEntity.ok(userService.addNewUser(newUs));
+//			}
+//			catch (Exception e) {
+//				e.printStackTrace();
+//				return ResponseEntity.notFound().build();
+//			}
+//		}
+//		return ResponseEntity.notFound().build();
+//	}
 	@PostMapping("/del")
 	public boolean deleteUser(HttpServletRequest httpRequest) {
 		int id=Integer.parseInt( httpRequest.getParameter("id"));
@@ -104,8 +115,5 @@ public class UserContrl {
 			e.printStackTrace();
 			return false;
 		}
-		
-		
 	}
-
 }

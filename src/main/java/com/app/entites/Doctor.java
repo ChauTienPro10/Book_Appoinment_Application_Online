@@ -20,6 +20,18 @@ public class Doctor {
 	private String specialization;
 	@Column(name="avatar")
 	private byte[] avatar;
+	@Column(name="name")
+	private String name;
+	
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public void setDoctorid(long doctorid) {
+		this.doctorid = doctorid;
+	}
 	public long getDoctorid() {
 		return doctorid;
 	}
