@@ -7,7 +7,9 @@ import java.util.Map;
 
 import javax.annotation.security.PermitAll;
 import javax.naming.AuthenticationException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
@@ -24,6 +26,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.security.web.csrf.DefaultCsrfToken;
 
 import com.app.JwtTokenProvider;
 import com.app.entites.CustomUserDetails;
@@ -49,17 +53,38 @@ public class TestControler {
 	@Autowired
 	private JwtTokenProvider tokenProvider;
 
+//	@PostMapping("/login")
+//	public LoginResponse authenticateUser(@Valid @RequestBody LoginRequest loginRequest)
+//			throws AuthenticationException {
+//		Authentication authentication = authenticationManager.authenticate(
+//				new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+//		SecurityContextHolder.getContext().setAuthentication(authentication);
+//		String jwt = tokenProvider.generateToken((CustomUserDetails) authentication.getPrincipal());
+//		@SuppressWarnings("unchecked")
+//		List<GrantedAuthority> authorities = (List<GrantedAuthority>) authentication.getAuthorities();
+//		User us = userRepository.findByUsername(loginRequest.getUsername());
+//		return new LoginResponse(jwt, authorities, authentication.getName(), us.getUserid());
+//	}
+	
 	@PostMapping("/login")
-	public LoginResponse authenticateUser(@Valid @RequestBody LoginRequest loginRequest)
-			throws AuthenticationException {
-		Authentication authentication = authenticationManager.authenticate(
-				new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
-		SecurityContextHolder.getContext().setAuthentication(authentication);
-		String jwt = tokenProvider.generateToken((CustomUserDetails) authentication.getPrincipal());
-		@SuppressWarnings("unchecked")
-		List<GrantedAuthority> authorities = (List<GrantedAuthority>) authentication.getAuthorities();
-		User us = userRepository.findByUsername(loginRequest.getUsername());
-		return new LoginResponse(jwt, authorities, authentication.getName(), us.getUserid());
+	public LoginResponse authenticateUser(@Valid @RequestBody LoginRequest loginRequest,
+	        HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+	    Authentication authentication = authenticationManager.authenticate(
+	            new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+	    SecurityContextHolder.getContext().setAuthentication(authentication);
+
+	    // Tạo CSRF token và đặt vào cookie
+	    CsrfToken csrfToken = new DefaultCsrfToken("X-CSRF-TOKEN", "_csrf", request.getAttribute(CsrfToken.class.getName()).toString());
+	    Cookie cookie = new Cookie(csrfToken.getParameterName(), csrfToken.getToken());
+	    cookie.setPath("/");
+	    response.addCookie(cookie);
+
+	    // Tiếp tục xử lý và tạo JWT token
+	    String jwt = tokenProvider.generateToken((CustomUserDetails) authentication.getPrincipal());
+	    @SuppressWarnings("unchecked")
+	    List<GrantedAuthority> authorities = (List<GrantedAuthority>) authentication.getAuthorities();
+	    User us = userRepository.findByUsername(loginRequest.getUsername());
+	    return new LoginResponse(jwt, authorities, authentication.getName(), us.getUserid());
 	}
 
 	@PostMapping("/logout")

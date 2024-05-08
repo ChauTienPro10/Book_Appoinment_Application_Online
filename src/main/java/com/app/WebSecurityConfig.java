@@ -3,6 +3,8 @@ package com.app;
 import java.time.Duration;
 import java.util.Arrays;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,6 +17,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.CorsUtils;
@@ -61,19 +66,47 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.passwordEncoder(passwordEncoder()); 
 	}
 
+//	@Override
+//	protected void configure(HttpSecurity http) throws Exception {
+//		http.cors().configurationSource(request -> {
+//			CorsConfiguration configuration = new CorsConfiguration().applyPermitDefaultValues();
+//			configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
+//			return configuration;
+//		}).and().csrf().and().authorizeRequests()
+//        
+//				.requestMatchers(CorsUtils::isPreFlightRequest).permitAll().antMatchers("/api/**","/doctor/getDoctor","/api/signup","/api/login").permitAll()
+//				.antMatchers("/confirm/agree","/confirm/allConfirm").hasRole("DOCTOR")
+//				.anyRequest().authenticated();
+//		http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+//	}
+	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.cors().configurationSource(request -> {
-			CorsConfiguration configuration = new CorsConfiguration().applyPermitDefaultValues();
-			configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
-			return configuration;
-		}).and().csrf().and().authorizeRequests().antMatchers("/api/login").permitAll()
-        .anyRequest().authenticated()
-        
-				.requestMatchers(CorsUtils::isPreFlightRequest).permitAll().antMatchers("/api/**","/doctor/getDoctor","/api/signup").permitAll()
-				.antMatchers("/confirm/agree","/confirm/allConfirm").hasRole("DOCTOR")
-				.anyRequest().authenticated();
-		http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+	    http
+	        .cors().configurationSource(request -> {
+	            CorsConfiguration configuration = new CorsConfiguration().applyPermitDefaultValues();
+	            configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
+	            return configuration;
+	        })
+	        .and()
+	        .csrf()
+	            .requireCsrfProtectionMatcher(new RequestMatcher() {
+	                private AntPathRequestMatcher requestMatcher = new AntPathRequestMatcher("/api/login", "POST");
+
+	                @Override
+	                public boolean matches(HttpServletRequest request) {
+	                    return !requestMatcher.matches(request);
+	                }
+	            }).csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+	            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+	        .and()
+	        .authorizeRequests()
+	            .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
+	            .antMatchers("/api/**", "/doctor/getDoctor", "/api/signup", "/api/login").permitAll()
+	            .antMatchers("/confirm/agree", "/confirm/allConfirm").hasRole("DOCTOR")
+	            .anyRequest().authenticated();
+	    
+	    http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 	}
 
 }
